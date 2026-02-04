@@ -1,0 +1,29 @@
+{
+  "name": "Telegram Poster Bot",
+  "description": "Movie / Anime / Poster Bot with TMDB, OMDb and multi-source poster scraping.",
+  "env": {
+    "BOT_TOKEN": {
+      "description": "Telegram Bot Token",
+      "required": true
+    },
+    "TMDB_API_KEY": {
+      "description": "TMDB API key",
+      "required": false
+    },
+    "OMDB_API_KEY": {
+      "description": "OMDb API key",
+      "required": false
+    },
+    "DEBUG": {
+      "description": "Enable debug logs",
+      "required": false,
+      "value": "false"
+    }
+  },
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  }
+}
