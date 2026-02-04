@@ -69,8 +69,8 @@ def build_caption_box(
     trimmed_overview = overview.strip() if overview else "No synopsis available."
     if len(trimmed_overview) > 900:
         trimmed_overview = trimmed_overview[:897] + "..."
-    synopsis = f"🧾 Synopsis :
-{trimmed_overview}"
+    synopsis = "🧾 Synopsis :
+" + trimmed_overview
     return (
         f"{line}
 "
