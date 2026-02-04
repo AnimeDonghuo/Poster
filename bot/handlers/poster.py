@@ -20,9 +20,7 @@ async def p_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     args = update.message.text.split(" ", 1)
     if len(args) < 2 or not args[1].strip():
         await update.message.reply_text(
-            "Send like:
-`/p naruto`
-`/p iron man 2012`",
+            "Send like: /p naruto | /p iron man 2012",
             parse_mode="Markdown",
         )
         return
@@ -65,7 +63,11 @@ async def p_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             [InlineKeyboardButton("Select 🎯", callback_data=f"poster:{session_id}:select")],
         ]
     )
-    msg = await update.message.reply_photo(photo=first["url"], caption=caption, reply_markup=keyboard)
+    msg = await update.message.reply_photo(
+        photo=first["url"],
+        caption=caption,
+        reply_markup=keyboard,
+    )
     sessions[session_id]["message_id"] = msg.message_id
 
 
@@ -83,6 +85,7 @@ async def poster_pagination_callback(update: Update, context: ContextTypes.DEFAU
     if not session:
         await query.edit_message_caption(caption="Session expired. Please use /p again.")
         return
+
     meta = session["meta"]
     images: List[Dict[str, Any]] = meta["images"]
     idx = session["index"]
