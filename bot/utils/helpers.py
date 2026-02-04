@@ -95,6 +95,7 @@ def build_caption_box(
         f"{line}"
     )
 
+
 def safe_get(d: Dict[str, Any], *keys, default=None):
     cur = d
     for k in keys:
