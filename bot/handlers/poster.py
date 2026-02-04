@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
-from telegram.ext import ContextTypes, CommandHandler, Application, CallbackQueryHandler
+from telegram.ext import ContextTypes
 from ..services.aggregator import get_metadata_and_images
 from ..utils.helpers import extract_year_from_query, build_caption_box
 
@@ -19,9 +19,12 @@ async def p_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     args = update.message.text.split(" ", 1)
     if len(args) < 2 or not args[1].strip():
-        await update.message.reply_text("Send like:
+        await update.message.reply_text(
+            "Send like:
 `/p naruto`
-`/p iron man 2012`", parse_mode="Markdown")
+`/p iron man 2012`",
+            parse_mode="Markdown",
+        )
         return
 
     query_text = args[1]
@@ -90,7 +93,6 @@ async def poster_pagination_callback(update: Update, context: ContextTypes.DEFAU
     elif action == "prev":
         idx = (idx - 1) % total
     elif action == "select":
-        # Send final poster as new message (display-only)
         final = images[idx]
         caption = build_caption_box(
             meta["title"],
