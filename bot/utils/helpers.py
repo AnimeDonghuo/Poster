@@ -56,19 +56,20 @@ def build_caption_box(
     genres: List[str],
     audio_info: Optional[str] = None,
 ) -> str:
-    line = "─" * 38
-    header = f"🎬 {title}"
+    line = "-" * 38
+    header = f"Title: {title}"
     if year:
         header += f" ({year})"
-    type_line = f"🎭 Type : {content_type}"
-    rating_line = f"⭐ Rating : {rating:.1f}/10" if rating is not None else "⭐ Rating : N/A"
-    quality_line = "📁 Quality : 480p | 720p | 1080p"
-    audio_line = f"🔈 Audio : {audio_info}" if audio_info else "🔈 Audio : N/A"
-    genres_line = f"🎯 Genres : {', '.join(genres) if genres else 'N/A'}"
+    type_line = f"Type: {content_type}"
+    rating_line = f"Rating: {rating:.1f}/10" if rating is not None else "Rating: N/A"
+    quality_line = "Quality: 480p | 720p | 1080p"
+    audio_line = f"Audio: {audio_info}" if audio_info else "Audio: N/A"
+    genres_line = f"Genres: {', '.join(genres) if genres else 'N/A'}"
     trimmed_overview = overview.strip() if overview else "No synopsis available."
     if len(trimmed_overview) > 900:
         trimmed_overview = trimmed_overview[:897] + "..."
-    synopsis = "Synopsis:" + trimmed_overview
+    synopsis = "Synopsis:
+" + trimmed_overview
     return (
         f"{line}
 "
