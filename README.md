@@ -38,7 +38,7 @@ TMDB_API_KEY=your_tmdb_api_key
 OMDB_API_KEY=your_omdb_api_key
 DEBUG=false
 
-## Local Run
+## LOCAL RUN
 
 pip install -r requirements.txt
 export BOT_TOKEN=...
@@ -64,7 +64,9 @@ use Dockerfile build, instance type free.
 Set environment variables:BOT_TOKENTMDB_API_KEYOMDB_API_KEYDEBUG=falseDeploy;
  the bot runs with polling.
 
-Docker usageBuild and run with Docker:docker build -t poster-bot .
+Docker usage
+Build and run with Docker:docker
+build -t poster-bot .
 docker run --rm \
   -e BOT_TOKEN=your_token \
   -e TMDB_API_KEY=your_tmdb_key \
