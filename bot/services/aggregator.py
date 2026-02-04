@@ -44,17 +44,25 @@ async def search_title(query: str, year: Optional[int] = None) -> Optional[Dict[
         if colls:
             chosen = colls[0]
 
-    if not chosen and omdb_data := await omdb.find_by_title(query, year):
-        chosen = {
-            "media_type": "movie",
-            "title": omdb_data.get("Title"),
-            "name": omdb_data.get("Title"),
-            "overview": omdb_data.get("Plot"),
-            "release_date": omdb_data.get("Year"),
-            "vote_average": float(omdb_data["imdbRating"]) if omdb_data.get("imdbRating") not in (None, "N/A") else None,
-            "genres": [g.strip() for g in (omdb_data.get("Genre") or "").split(",") if g.strip()],
-            "imdb_id": omdb_data.get("imdbID"),
-        }
+    if not chosen:
+        omdb_data = await omdb.find_by_title(query, year)
+        if omdb_data:
+            chosen = {
+                "media_type": "movie",
+                "title": omdb_data.get("Title"),
+                "name": omdb_data.get("Title"),
+                "overview": omdb_data.get("Plot"),
+                "release_date": omdb_data.get("Year"),
+                "vote_average": float(omdb_data["imdbRating"])
+                if omdb_data.get("imdbRating") not in (None, "N/A")
+                else None,
+                "genres": [
+                    g.strip()
+                    for g in (omdb_data.get("Genre") or "").split(",")
+                    if g.strip()
+                ],
+                "imdb_id": omdb_data.get("imdbID"),
+            }
 
     cache.set(key, chosen)
     return chosen
@@ -67,7 +75,7 @@ async def get_metadata_and_images(query: str, year: Optional[int] = None) -> Opt
 
     media_type_raw = info.get("media_type") or "movie"
     if media_type_raw == "tv":
-        media_type = "tv"
+        media_type: Literal["movie", "tv"] = "tv"
     elif media_type_raw == "movie":
         media_type = "movie"
     else:
@@ -82,16 +90,31 @@ async def get_metadata_and_images(query: str, year: Optional[int] = None) -> Opt
         images = await tmdb.get_images(media_type, tmdb_id)
         tmdb_images = tmdb.build_image_items(images)
 
-    title = details.get("title") or details.get("name") or info.get("title") or info.get("name") or query
+    title = (
+        details.get("title")
+        or details.get("name")
+        or info.get("title")
+        or info.get("name")
+        or query
+    )
     year_val: Optional[int] = None
-    date = details.get("release_date") or details.get("first_air_date") or info.get("release_date")
+    date = (
+        details.get("release_date")
+        or details.get("first_air_date")
+        or info.get("release_date")
+    )
     if date and len(date) >= 4:
         try:
             year_val = int(date[:4])
         except ValueError:
             year_val = None
     rating = details.get("vote_average") or info.get("vote_average")
-    genres = [g["name"] for g in details.get("genres", [])] if details.get("genres") else info.get("genres") or []
+    genres = (
+        [g["name"] for g in details.get("genres", [])]
+        if details.get("genres")
+        else info.get("genres")
+        or []
+    )
     overview = details.get("overview") or info.get("overview") or ""
     imdb_id = details.get("imdb_id") or info.get("imdb_id")
 
@@ -99,9 +122,11 @@ async def get_metadata_and_images(query: str, year: Optional[int] = None) -> Opt
 
     # IMDb images
     if imdb_id:
-        scraped_images.extend(await imdb_scraper.extract_posters_from_title_page(imdb_id))
+        scraped_images.extend(
+            await imdb_scraper.extract_posters_from_title_page(imdb_id)
+        )
 
-    # Wide sources via Google/Bing
+    # Wide sources via Google/Bing and other CDNs
     scraped_images.extend(await image_scraper.scrape_fanart(title))
     scraped_images.extend(await image_scraper.scrape_theposterdb(title))
     scraped_images.extend(await image_scraper.scrape_tvdb(title))
@@ -118,7 +143,6 @@ async def get_metadata_and_images(query: str, year: Optional[int] = None) -> Opt
     all_images = dedupe_images(all_images)
     all_images = sort_images(all_images)
 
-    # Classification
     detected_type = await detect_content_type(query)
     if media_type == "tv" and detected_type == "Movie/TV":
         detected_type = "TV Show"
@@ -133,4 +157,4 @@ async def get_metadata_and_images(query: str, year: Optional[int] = None) -> Opt
         "overview": overview,
         "content_type": detected_type,
         "images": all_images,
-  }
+    }
